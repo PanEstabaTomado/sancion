@@ -12,9 +12,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SancionRequestDTO {
-    @NotNull(message = "El id de la sancion no puede estar vacio.")
-    private Long idSancion;
-
     @NotNull(message = "La fecha de vencimiento del prestamo no puede estar vacia.")
     private LocalDate fecIniSancion;
 

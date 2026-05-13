@@ -18,13 +18,26 @@ public class SancionService {
     private final SancionRepository sancionRepository;
 
     private SancionResponseDTO mapToDOTO(Sancion sancion){
-        return new SancionResponseDTO(
-                sancion.getIdSancion(),
-                sancion.getFecIniSancion(),
-                sancion.getMontoMulta(),
-                sancion.getMotivo(),
-                sancion.isPagado()
-        );
+        if (sancion.isPagado()){
+            String pagado = "Pagado";
+            return new SancionResponseDTO(
+                    sancion.getIdSancion(),
+                    sancion.getFecIniSancion(),
+                    sancion.getMontoMulta(),
+                    sancion.getMotivo(),
+                    pagado
+            );
+        } else {
+            String pagado = "No pagado";
+            return new SancionResponseDTO(
+                    sancion.getIdSancion(),
+                    sancion.getFecIniSancion(),
+                    sancion.getMontoMulta(),
+                    sancion.getMotivo(),
+                    pagado
+            );
+        }
+
     }
 
     /*
@@ -63,11 +76,12 @@ public class SancionService {
 
     public SancionResponseDTO guardar(SancionRequestDTO dto) {
         // validarEspecialidad(dto.getEspecialidadId());
+
         Sancion m = new Sancion(
                 null,
                 dto.getFecIniSancion(),
                 dto.getMontoMulta(),
-                dto.getDescripcion(),
+                dto.getMotivo(),
                 dto.isPagado());
                 // dto.getEspecialidadId());
         return mapToDOTO(sancionRepository.save(m));
@@ -78,7 +92,7 @@ public class SancionService {
             //validarEspecialidad(dto.getEspecialidadId());
             existente.setFecIniSancion(dto.getFecIniSancion());
             existente.setMontoMulta(dto.getMontoMulta());
-            existente.setMotivo(dto.getDescripcion());
+            existente.setMotivo(dto.getMotivo());
             existente.setPagado(dto.isPagado());
             return mapToDOTO(sancionRepository.save(existente));
         });

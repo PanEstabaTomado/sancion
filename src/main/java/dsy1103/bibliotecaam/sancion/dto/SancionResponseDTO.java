@@ -1,6 +1,5 @@
 package dsy1103.bibliotecaam.sancion.dto;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,7 @@ public class SancionResponseDTO {
 
     private String motivo;
 
-    private boolean pagado;
+    private String pagado;
 
     /*
     private Long idPrestamo

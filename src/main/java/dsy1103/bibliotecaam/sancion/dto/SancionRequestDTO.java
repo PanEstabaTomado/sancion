@@ -19,9 +19,9 @@ public class SancionRequestDTO {
     private Integer montoMulta;
 
     @NotBlank(message = "Debe haber una descripcion que detalle las razones de la sancion.")
-    private String descripcion;
+    private String motivo;
 
-    @NotNull(message = "Se debe saber si la sancion fue pagada o no,")
+    @NotNull(message = "Se debe saber si la sancion fue pagada o no.")
     private boolean pagado;
 
     /*

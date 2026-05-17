@@ -19,7 +19,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errores);
     }
 
-    // Captura RuntimeException lanzada en MascotaService.validarEspecialidad()
+    // ── ERROR DE NEGOCIO (prestamo no encontrado, etc.) ──
+    // Se dispara cuando el Service lanza RuntimeException,
+    // por ejemplo: "Prestamo no encontrada con id: 99"
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntime(RuntimeException ex) {
         Map<String, String> error = new HashMap<>();

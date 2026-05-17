@@ -35,25 +35,16 @@ public class SancionController {
 
     @GetMapping("/pagado")
     public ResponseEntity<List<SancionResponseDTO>> obtenerSancionPagada() {
-        if (sancionService.obtenerSancionesPagadas().isEmpty()){
-            return ResponseEntity.noContent().build();
-        }
         return ResponseEntity.ok(sancionService.obtenerSancionesPagadas());
     }
 
     @GetMapping("/nopagado")
     public ResponseEntity<List<SancionResponseDTO>> obtenerSancionNoPagada() {
-        if (sancionService.obtenerSancionesNoPagadas().isEmpty()){
-            return ResponseEntity.noContent().build();
-        }
-            return ResponseEntity.ok(sancionService.obtenerSancionesPagadas());
+            return ResponseEntity.ok(sancionService.obtenerSancionesNoPagadas());
         }
 
     @GetMapping("/porfecha")
     public ResponseEntity<List<SancionResponseDTO>> obtenerPorFecha(LocalDate fecha){
-        if (sancionService.obtenerPorFecha(fecha).isEmpty()){
-            return ResponseEntity.noContent().build();
-        }
         return ResponseEntity.ok(sancionService.obtenerPorFecha(fecha));
     }
 

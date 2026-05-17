@@ -29,10 +29,13 @@ public class Sancion {
     private String motivo;
 
     @Column(nullable = false)
-    private boolean pagado;
+    private Boolean pagado;
 
     /*
     * * AQUI VAN:
     * La relacion a id Prestamo
      */
+
+    @Column(nullable = false)
+    private Long idPrestamo;
 }

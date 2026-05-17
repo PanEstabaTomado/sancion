@@ -5,27 +5,34 @@ import dsy1103.bibliotecaam.sancion.dto.SancionResponseDTO;
 import dsy1103.bibliotecaam.sancion.model.Sancion;
 import dsy1103.bibliotecaam.sancion.repository.SancionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SancionService {
     private final SancionRepository sancionRepository;
 
+    private final WebClient webClient;
+
     private SancionResponseDTO mapToDOTO(Sancion sancion){
-        if (sancion.isPagado()){
+        if (sancion.getPagado().equals(true)){
             String pagado = "Pagado";
             return new SancionResponseDTO(
                     sancion.getIdSancion(),
                     sancion.getFecIniSancion(),
                     sancion.getMontoMulta(),
                     sancion.getMotivo(),
-                    pagado
+                    pagado,
+                    sancion.getIdPrestamo()
             );
         } else {
             String pagado = "No pagado";
@@ -34,17 +41,18 @@ public class SancionService {
                     sancion.getFecIniSancion(),
                     sancion.getMontoMulta(),
                     sancion.getMotivo(),
-                    pagado
+                    pagado,
+                    sancion.getIdPrestamo()
             );
         }
 
     }
 
-    /*
+
     private void validarPrestamo(Long idPrestamo) {
         try {
             webClient.get()
-                    .uri("/api/prestamo/{id}", idPrestamo)
+                    .uri("/api/bibliotecaam/prestamo/{id}", idPrestamo)
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
@@ -52,13 +60,13 @@ public class SancionService {
 
         } catch (WebClientResponseException.NotFound e) {
             throw new RuntimeException(
-                    "El prestamo con id " + idPrestamo + " no existe en Prestamo.");
+                    "El prestamo con id " + idPrestamo + " no existe en la BBDD de Prestamo.");
         } catch (Exception e) {
             throw new RuntimeException(
-                    "No se puede conectar con prestamo: " + e.getMessage());
+                    "ERROR - No se puede conectar con la BBDD de Prestamo: " + e.getMessage());
         }
     }
-     */
+
 
 
     /*
@@ -76,24 +84,26 @@ public class SancionService {
 
     public SancionResponseDTO guardar(SancionRequestDTO dto) {
         // validarEspecialidad(dto.getEspecialidadId());
-
+        validarPrestamo(dto.getIdPrestamo());
         Sancion m = new Sancion(
                 null,
                 dto.getFecIniSancion(),
                 dto.getMontoMulta(),
                 dto.getMotivo(),
-                dto.isPagado());
+                dto.getPagado(),
+                dto.getIdPrestamo());
                 // dto.getEspecialidadId());
         return mapToDOTO(sancionRepository.save(m));
     }
 
     public Optional<SancionResponseDTO> actualizar(Long id, SancionRequestDTO dto) {
         return sancionRepository.findById(id).map(existente -> {
-            //validarEspecialidad(dto.getEspecialidadId());
+            validarPrestamo(dto.getIdPrestamo());
             existente.setFecIniSancion(dto.getFecIniSancion());
             existente.setMontoMulta(dto.getMontoMulta());
             existente.setMotivo(dto.getMotivo());
-            existente.setPagado(dto.isPagado());
+            existente.setPagado(dto.getPagado());
+            existente.setIdPrestamo(dto.getIdPrestamo());
             return mapToDOTO(sancionRepository.save(existente));
         });
     }

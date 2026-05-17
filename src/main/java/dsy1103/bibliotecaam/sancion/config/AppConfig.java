@@ -8,13 +8,23 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class AppConfig {
 
-    @Value("${prestamo.url}")
-    private String prestamoUrl;
+    @Value("${usuario.url}")
+    private String usuarioUrl;
+
+    @Value("${libro.url}")
+    private String libroUrl;
 
     @Bean
-    public WebClient webClient() {
+    public WebClient webClientUsuario() {
         return WebClient.builder()
-                .baseUrl(prestamoUrl)   // http://localhost:8085
+                .baseUrl(usuarioUrl)   // http://localhost:8085
+                .build();
+    }
+
+    @Bean
+    public WebClient webClientLibro() {
+        return WebClient.builder()
+                .baseUrl(libroUrl)   // http://localhost:8085
                 .build();
     }
 

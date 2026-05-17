@@ -37,5 +37,8 @@ public class Sancion {
      */
 
     @Column(nullable = false)
-    private Long idPrestamo;
+    private Long idUsuario;
+
+    @Column(nullable = false)
+    private Long idLibro;
 }

@@ -21,7 +21,9 @@ import java.util.stream.Collectors;
 public class SancionService {
     private final SancionRepository sancionRepository;
 
-    private final WebClient webClient;
+    private final WebClient webClientUsuario;
+
+    private final WebClient webClientLibro;
 
     private SancionResponseDTO mapToDOTO(Sancion sancion){
         if (sancion.getPagado().equals(true)){
@@ -32,7 +34,8 @@ public class SancionService {
                     sancion.getMontoMulta(),
                     sancion.getMotivo(),
                     pagado,
-                    sancion.getIdPrestamo()
+                    sancion.getIdUsuario(),
+                    sancion.getIdLibro()
             );
         } else {
             String pagado = "No pagado";
@@ -42,28 +45,47 @@ public class SancionService {
                     sancion.getMontoMulta(),
                     sancion.getMotivo(),
                     pagado,
-                    sancion.getIdPrestamo()
+                    sancion.getIdUsuario(),
+                    sancion.getIdLibro()
             );
         }
 
     }
 
 
-    private void validarPrestamo(Long idPrestamo) {
+    private void validarUsuario(Long idUsuario) {
         try {
-            webClient.get()
-                    .uri("/api/bibliotecaam/prestamo/{id}", idPrestamo)
+            webClientUsuario.get()
+                    .uri("/api/bibliotecaam/usuario/{id}", idUsuario)
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-            log.info(">>> Prestamo {} validado correctamente (WebClient)", idPrestamo);
+            log.info(">>> Usuario {} validado correctamente (WebClient)", idUsuario);
 
         } catch (WebClientResponseException.NotFound e) {
             throw new RuntimeException(
-                    "El prestamo con id " + idPrestamo + " no existe en la BBDD de Prestamo.");
+                    "El usuario con id " + idUsuario + " no existe en la BBDD de Usuario.");
         } catch (Exception e) {
             throw new RuntimeException(
-                    "ERROR - No se puede conectar con la BBDD de Prestamo: " + e.getMessage());
+                    "ERROR - No se puede conectar con la BBDD de Usuario: " + e.getMessage());
+        }
+    }
+
+    private void validarLibro(Long idLibro) {
+        try {
+            webClientLibro.get()
+                    .uri("/api/bibliotecaam/libro/{id}", idLibro)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+            log.info(">>> Libro {} validado correctamente (WebClient)", idLibro);
+
+        } catch (WebClientResponseException.NotFound e) {
+            throw new RuntimeException(
+                    "El libro con id " + idLibro + " no existe en la BBDD de Libro.");
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "ERROR - No se puede conectar con la BBDD de Libro: " + e.getMessage());
         }
     }
 
@@ -83,27 +105,33 @@ public class SancionService {
     }
 
     public SancionResponseDTO guardar(SancionRequestDTO dto) {
-        // validarEspecialidad(dto.getEspecialidadId());
-        validarPrestamo(dto.getIdPrestamo());
+        validarUsuario(dto.getIdUsuario());
+
+        validarLibro(dto.getIdLibro());
+
         Sancion m = new Sancion(
                 null,
                 dto.getFecIniSancion(),
                 dto.getMontoMulta(),
                 dto.getMotivo(),
                 dto.getPagado(),
-                dto.getIdPrestamo());
-                // dto.getEspecialidadId());
+                dto.getIdUsuario(),
+                dto.getIdLibro());
         return mapToDOTO(sancionRepository.save(m));
     }
 
     public Optional<SancionResponseDTO> actualizar(Long id, SancionRequestDTO dto) {
         return sancionRepository.findById(id).map(existente -> {
-            validarPrestamo(dto.getIdPrestamo());
+            validarUsuario(dto.getIdUsuario());
+
+            validarLibro(dto.getIdLibro());
+
             existente.setFecIniSancion(dto.getFecIniSancion());
             existente.setMontoMulta(dto.getMontoMulta());
             existente.setMotivo(dto.getMotivo());
             existente.setPagado(dto.getPagado());
-            existente.setIdPrestamo(dto.getIdPrestamo());
+            existente.setIdUsuario(dto.getIdUsuario());
+            existente.setIdLibro(dto.getIdLibro());
             return mapToDOTO(sancionRepository.save(existente));
         });
     }

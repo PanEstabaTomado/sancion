@@ -26,7 +26,10 @@ public class SancionRequestDTO {
     @NotNull(message = "Se debe saber si la sancion fue pagada o no.")
     private Boolean pagado;
 
-    @NotNull(message = "El idPrestamo es obligatorio")
-    private Long idPrestamo;
+    @NotNull(message = "El id del usuario es obligatorio")
+    private Long idUsuario;
+
+    @NotNull(message = "El id del Libro es obligatorio")
+    private Long idLibro;
 
 }

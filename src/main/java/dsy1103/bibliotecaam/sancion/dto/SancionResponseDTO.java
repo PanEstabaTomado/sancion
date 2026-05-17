@@ -20,7 +20,8 @@ public class SancionResponseDTO {
 
     private String pagado;
 
+    private Long idUsuario;
 
-    private Long idPrestamo;
+    private Long idLibro;
 
 }

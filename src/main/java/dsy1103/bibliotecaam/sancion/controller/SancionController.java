@@ -63,12 +63,17 @@ public class SancionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id) {
-        sancionService.eliminar(id);
-        Map<String, String> borrado = new LinkedHashMap<>();
-        borrado.put("¡EXITO! ","¡La sancion fue eliminada con exito!");
-        sancionService.eliminar(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(borrado);
+    public ResponseEntity<Map<String,String>> eliminar(@PathVariable Long id) {
+        if (sancionService.obtenerPorId(id).isEmpty()){
+            Map<String, String> borrado = new LinkedHashMap<>();
+            borrado.put("¡ERROR! ", "¡La sancion con id "+id+" no fue encontrada!");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(borrado);
+        }else {
+            sancionService.eliminar(id);
+            Map<String, String> borrado = new LinkedHashMap<>();
+            borrado.put("¡EXITO! ", "¡La sancion fue eliminada con exito!");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(borrado);
+        }
     }
 
 

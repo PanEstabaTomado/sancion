@@ -22,7 +22,7 @@ public class Sancion {
     @Column(nullable = false)
     private LocalDate fecIniSancion;
 
-    @Column(nullable = false, precision = 8)
+    @Column(nullable = false)
     private Integer montoMulta;
 
     @Column(nullable = false,length = 100)

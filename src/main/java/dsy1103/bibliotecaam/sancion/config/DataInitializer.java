@@ -21,10 +21,10 @@ public class DataInitializer implements CommandLineRunner{
             log.info(">>> Sanciones ya cargadas. Se omite inicialización.");
             return;
         }
-        log.info(">>> Cargando mascotas iniciales...");
-        sancionRepository.save(new Sancion(null, LocalDate.of(2006,7,20), 50000,          "No pago en el plazo de vencimiento de su prestamo.", true,1L));
-        sancionRepository.save(new Sancion(null, LocalDate.of(2009,12,19), 65000,          "No pago en el plazo de vencimiento de su prestamo.", false,1L));
-        sancionRepository.save(new Sancion(null, LocalDate.of(2010,2,21), 35000,          "No pago en el plazo de vencimiento de su prestamo.", false,1L));
+        log.info(">>> Cargando sanciones iniciales...");
+        sancionRepository.save(new Sancion(null, LocalDate.of(2006,7,20), 50000,          "No pago en el plazo de vencimiento de su prestamo.", true,1L,1L));
+        sancionRepository.save(new Sancion(null, LocalDate.of(2009,12,19), 65000,          "No pago en el plazo de vencimiento de su prestamo.", false,1L,2L));
+        sancionRepository.save(new Sancion(null, LocalDate.of(2010,2,21), 35000,          "No pago en el plazo de vencimiento de su prestamo.", false,1L,3L));
         log.info(">>> 3 Sanciones cargadas OK.");
     }
 }

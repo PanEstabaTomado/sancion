@@ -1,5 +1,7 @@
 package dsy1103.bibliotecaam.sancion.controller;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
+import dsy1103.bibliotecaam.sancion.assembler.SancionModelAssembler;
 import dsy1103.bibliotecaam.sancion.dto.SancionRequestDTO;
 import dsy1103.bibliotecaam.sancion.dto.SancionResponseDTO;
 import dsy1103.bibliotecaam.sancion.model.Sancion;
@@ -12,6 +14,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +26,7 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/bibliotecaam/sancion")
@@ -29,14 +36,22 @@ public class SancionController {
 
     private final SancionService sancionService;
 
-    @GetMapping
+    @Autowired
+    private SancionModelAssembler assembler;
+
+    @GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
     @Operation(summary = "Obtener todas las sancion", description = "Obtiene una lista de todas las sancinoes.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa"),
             @ApiResponse(responseCode = "404", description = "Sancion no encontrada")
     })
-    public ResponseEntity<List<SancionResponseDTO>> obtenerTodas() {
-        return ResponseEntity.ok(sancionService.obtenerTodas());
+    public ResponseEntity<CollectionModel<EntityModel<SancionResponseDTO>>> obtenerTodas() {
+        List<EntityModel<SancionResponseDTO>> sanciones = sancionService.obtenerTodas().stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(CollectionModel.of(sanciones,
+                linkTo(methodOn(SancionController.class).obtenerTodas()).withSelfRel()));
     }
 
     @GetMapping("/{id}")
@@ -45,8 +60,9 @@ public class SancionController {
             @ApiResponse(responseCode = "200", description = "Operación exitosa"),
             @ApiResponse(responseCode = "404", description = "Sancion no encontrada")
     })
-    public ResponseEntity<SancionResponseDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<SancionResponseDTO>>  obtenerPorId(@PathVariable Long id) {
         return sancionService.obtenerPorId(id)
+                .map(assembler::toModel)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -57,8 +73,13 @@ public class SancionController {
             @ApiResponse(responseCode = "200", description = "Operación exitosa"),
             @ApiResponse(responseCode = "404", description = "Sancion no encontrada")
     })
-    public ResponseEntity<List<SancionResponseDTO>> obtenerSancionPagada() {
-        return ResponseEntity.ok(sancionService.obtenerSancionesPagadas());
+    public ResponseEntity<CollectionModel<EntityModel<SancionResponseDTO>>>  obtenerSancionPagada() {
+        List<EntityModel<SancionResponseDTO>> sanciones = sancionService.obtenerSancionesPagadas().stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(CollectionModel.of(sanciones,
+                linkTo(methodOn(SancionController.class).obtenerSancionPagada()).withSelfRel()));
     }
 
     @GetMapping("/nopagado")
@@ -67,9 +88,14 @@ public class SancionController {
             @ApiResponse(responseCode = "200", description = "Operación exitosa"),
             @ApiResponse(responseCode = "404", description = "Sancion no encontrada")
     })
-    public ResponseEntity<List<SancionResponseDTO>> obtenerSancionNoPagada() {
-            return ResponseEntity.ok(sancionService.obtenerSancionesNoPagadas());
-        }
+    public ResponseEntity<CollectionModel<EntityModel<SancionResponseDTO>>>  obtenerSancionNoPagada() {
+        List<EntityModel<SancionResponseDTO>> sanciones = sancionService.obtenerSancionesNoPagadas().stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(CollectionModel.of(sanciones,
+                linkTo(methodOn(SancionController.class).obtenerSancionNoPagada()).withSelfRel()));
+    }
 
     @GetMapping("/porfecha")
     @Operation(summary = "Obtener sanciones acorde a una fecha", description = "Obtiene una sancion acorde a una fecha.")
@@ -77,8 +103,13 @@ public class SancionController {
             @ApiResponse(responseCode = "200", description = "Operación exitosa"),
             @ApiResponse(responseCode = "404", description = "Sancion no encontrada")
     })
-    public ResponseEntity<List<SancionResponseDTO>> obtenerPorFecha(LocalDate fecha){
-        return ResponseEntity.ok(sancionService.obtenerPorFecha(fecha));
+    public ResponseEntity<CollectionModel<EntityModel<SancionResponseDTO>>>  obtenerPorFecha(LocalDate fecha){
+        List<EntityModel<SancionResponseDTO>> sanciones = sancionService.obtenerPorFecha(fecha).stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(CollectionModel.of(sanciones,
+                linkTo(methodOn(SancionController.class).obtenerPorFecha(fecha)).withSelfRel()));
     }
 
     @PostMapping
@@ -88,8 +119,9 @@ public class SancionController {
             @ApiResponse(responseCode = "400", description = "Error al ingresar parametros. Revise si ingreso todos los parametros solicitados."),
             @ApiResponse(responseCode = "403", description = "No tienes permiso para hacer el cambio.")
     })
-    private ResponseEntity<SancionResponseDTO> guardar(@Valid @RequestBody SancionRequestDTO dto){
-        return ResponseEntity.status(201).body(sancionService.guardar(dto));
+    private ResponseEntity<EntityModel<SancionResponseDTO>> guardar(@Valid @RequestBody SancionRequestDTO dto){
+        SancionResponseDTO nuevaSancion = sancionService.guardar(dto);
+        return ResponseEntity.status(201).body(assembler.toModel(nuevaSancion));
     }
 
     @PutMapping("/{id}")
@@ -100,10 +132,11 @@ public class SancionController {
                             schema = @Schema(implementation = Sancion.class))),
             @ApiResponse(responseCode = "404", description = "El id de la sancion no existe.")
     })
-    public ResponseEntity<SancionResponseDTO> actualizar(
+    public ResponseEntity<EntityModel<SancionResponseDTO>> actualizar(
             @PathVariable Long id,
             @Valid @RequestBody SancionRequestDTO dto) {
         return sancionService.actualizar(id, dto)
+                .map(assembler::toModel)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

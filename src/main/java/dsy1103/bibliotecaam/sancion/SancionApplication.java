@@ -2,6 +2,8 @@ package dsy1103.bibliotecaam.sancion;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+
 /*
 ----------------------------- AVISO DE UTILIDAD -------------------------------
 * * * * * ANTES DE INICIAR EL MICRO SERVICIO DE SANCION
@@ -9,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 * * * * * O TENDRAS PROBLEMAS AL CREAR Y MODIFICAR CUANDO LO USES.
  */
 @SpringBootApplication
+@EnableDiscoveryClient
 public class SancionApplication {
 
 	public static void main(String[] args) {

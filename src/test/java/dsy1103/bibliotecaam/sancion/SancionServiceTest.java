@@ -43,7 +43,6 @@ class SancionServiceTest {
     @MockitoBean(name = "webClientLibro")
     private WebClient webClientLibro;
 
-    // Estructuras auxiliares para simular la API fluida de WebClient
     @SuppressWarnings("rawtypes")
     private WebClient.RequestHeadersUriSpec requestHeadersUriSpecMock;
     @SuppressWarnings("rawtypes")

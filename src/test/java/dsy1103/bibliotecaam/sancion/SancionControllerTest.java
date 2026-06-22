@@ -55,7 +55,6 @@ class SancionControllerTest {
         s1 = new SancionResponseDTO(1L, LocalDate.now(), 5000, "Entrega atrasada", "No Pagado", 100L, 500L);
         s2 = new SancionResponseDTO(2L, LocalDate.now(), 3000, "Libro dañado", "Pagado", 101L, 501L);
 
-        // Mockear el comportamiento del Assembler de HATEOAS
         Mockito.when(assembler.toModel(eq(s1))).thenReturn(
                 EntityModel.of(s1, linkTo(methodOn(SancionController.class).obtenerPorId(1L)).withSelfRel())
         );

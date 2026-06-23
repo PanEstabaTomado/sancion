@@ -10,10 +10,18 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI customOpenAPI(){
+        SecurityScheme securityScheme = new SecurityScheme()
+                .name("bearerAuth")
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT");
+        SecurityRequirement securityRequirement = new SecurityRequirement()
+                .addList("bearerAuth");
         return new OpenAPI()
-                .info(new Info()
-                        .title("API 2026 Listado de asistencias.")
+                .info(new Info().title("API 2026 Sanciones de la Biblioteca AM")
                         .version("1.0")
-                        .description("Documentacion de la API para crear el sistema de asistencias."));
+                        .description("Documentacion de la API para el sistema de sanciones de la Biblioteca AM"))
+                .components(new Components().addSecuritySchemes("bearerAuth",securityScheme))
+                .addSecurityItem(securityRequirement);
     }
 }
